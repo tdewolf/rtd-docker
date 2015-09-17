@@ -1,0 +1,15 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Contact RTD Admins" %}{% endblock %}
+
+{% block content %}
+    <h1>{% trans "Contact the Amplidata RTD Admins" %}</h1>
+
+    <p>{% blocktrans %}You will not receive any mail from us.{% endblocktrans %}</p>
+
+    <p>{% blocktrans %}Please contact Thomas De Wolf (thomas.de.wolf@hgst.com) or Carl D'Halluin
+    (carl.dhalluin@hgst.com) to complete your account subscription.{% endblocktrans %}</p>
+
+{% endblock %}

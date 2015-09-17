@@ -1,0 +1,63 @@
+A Dockerfile that sets up a ReadTheDocs server with ElasticSearch
+
+
+
+Preparation (on Ubuntu 14.04):
+
+- Install docker
+    sudo apt-get install lxc-docker
+- Edit the docker config and restart docker
+    Edit /etc/default/docker - add line:
+       DOCKER_OPTS="--insecure-registry dregistry.amplidata.com:5000"
+    sudo service docker restart
+
+
+
+Building the Docker image:
+
+  sudo docker build -t rtd-docker .
+
+
+
+Running the Docker image:
+
+* on your desktop (sets up X11, SSH key forwarding, plus a shared directory)
+
+  ./run.bash rtd-docker
+
+  Inside the running docker, go to /root/checkouts/readthedocs.org
+  Run the ./start_servers.sh script, this will launch the ReadTheDocs server and its dependencies
+  Browse to localhost:8000
+
+
+* on a server (this will expose ReadTheDocs on port 18000 of your "host"):
+  
+  sudo docker run --rm -t -p 18000:8000 -i -d \ 
+  -v /mnt/hdd_c/specsite/user_builds:/root/checkouts/readthedocs.org/user_builds \
+  -v /mnt/hdd_c/specsite/sqldb/dev.db:/root/checkouts/readthedocs.org/dev.db \
+  rtd-docker /bin/bash
+
+  Find the name of the docker container with "docker ps"
+  
+  Connect to the container: "sudo docker exec -it <container name> /bin/bash"
+
+  Inside the container go to /root/checkouts/readthedocs.org and execute start_servers.sh
+
+  .. note::
+
+     sudo docker run --rm -t -p 18000:8000 -i -v
+     /mnt/hdd_c/specsite/user_builds:/root/checkouts/readthedocs.org/user_builds rtd-docker /bin/bash
+
+     # Now you are inside the Docker container
+     service redis-server start
+     service elasticsearch start
+     /root/checkouts/readthedocs.org/manage.py runserver 0.0.0.0:8000 &
+
+  # Now browse to http://hostip:18000
+
+  Log in with user admin pass admin. uring the first login, the
+  account activation link will be printed in the console where you started the RTD server.
+  You need to open it to enable the account.
+
+  A sample project can be found at git@gitlab.amplidata.com:dekeysek/scaler-specs-rtd-test.git
+
